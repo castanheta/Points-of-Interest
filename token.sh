@@ -3,19 +3,21 @@ set -euo pipefail
 
 # ─── CONFIG ────────────────────────────────────────────────────────────────
 NAMESPACE=wayly
-SECRET_NAME=poi-secrets
-LABEL_SELECTOR="app=postgres"
+SECRET_NAME=poiuser.poi-db-cluster.credentials.postgresql.acid.zalan.do
+LABEL_SELECTOR="cluster-name=poi-db-cluster,spilo-role=master"
+POSTGRES_DB=poidb
 # ────────────────────────────────────────────────────────────────────────────
 
 # Fetch and decode Postgres credentials into environment variables
 fetch_secrets() {
   echo "→ Loading secrets from Secret/${SECRET_NAME} in namespace ${NAMESPACE}"
-  for key in POSTGRES_USER POSTGRES_PASSWORD POSTGRES_DB; do
+  for key in username password; do
     val=$(kubectl get secret "${SECRET_NAME}" -n "${NAMESPACE}" \
       -o go-template="{{ index .data \"${key}\" }}" | base64 --decode)
     export ${key}="${val}"
   done
-  export PGPASSWORD="$POSTGRES_PASSWORD"
+  export POSTGRES_USER="$username"
+  export PGPASSWORD="$password"
 }
 
 # Pick the first matching Postgres pod

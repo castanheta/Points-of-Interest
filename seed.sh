@@ -3,21 +3,23 @@ set -euo pipefail
 
 # ─── CONFIG ────────────────────────────────────────────────────────────────
 NAMESPACE=wayly
-SECRET_NAME=poi-secrets
-LABEL_SELECTOR="app=postgres"
+SECRET_NAME=poiuser.poi-db-cluster.credentials.postgresql.acid.zalan.do
+LABEL_SELECTOR="cluster-name=poi-db-cluster,spilo-role=master"
 SQL_FILE="./data.sql"
+POSTGRES_DB=poidb
 # ────────────────────────────────────────────────────────────────────────────
 
 fetch_secrets() {
   echo "→ Fetching secrets from Secret/${SECRET_NAME} in namespace ${NAMESPACE}"
   local key
-  for key in POSTGRES_USER POSTGRES_PASSWORD POSTGRES_DB; do
+  for key in username password; do
     local val
     val=$(kubectl get secret "${SECRET_NAME}" -n "${NAMESPACE}" \
       -o jsonpath="{.data.${key}}" | base64 --decode)
     export "${key}=${val}"
   done
-  export PGPASSWORD="$POSTGRES_PASSWORD"
+  export POSTGRES_USER="$username"
+  export PGPASSWORD="$password"
 }
 
 get_postgres_pod() {
