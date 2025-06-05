@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/points-of-interest")
+@RequestMapping("/poi-service/api/v1/points-of-interest")
 public class PointOfInterestController {
     private final PointOfInterestService service;
 
@@ -59,8 +59,8 @@ public class PointOfInterestController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePointOfInterest(@PathVariable String id) {
         boolean deleted = service.deletePointOfInterest(id);
-        return deleted 
-            ? ResponseEntity.noContent().build() 
+        return deleted
+            ? ResponseEntity.noContent().build()
             : ResponseEntity.notFound().build();
     }
 }

@@ -1,7 +1,7 @@
 version: '3.8'
 services:
-  poi-api:
-    container_name: poi-api
+  poi-service:
+    container_name: poi-service
     build: .
     ports:
       - "8080:8080"
@@ -9,17 +9,10 @@ services:
       - db
 
     environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASS}
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/${POSTGRES_DB}
-      - SPRING_DATASOURCE_USERNAME=${SPRING_USER}
-      - SPRING_DATASOURCE_PASSWORD=${SPRING_PASS}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASS}
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
   db:
       image: postgres:16.2
